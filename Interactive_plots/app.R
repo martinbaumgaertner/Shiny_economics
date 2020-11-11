@@ -4,17 +4,88 @@ library(tidyverse)
 library(shinydashboard)
 
 
+library(pacman)
+pacman::p_load(tidyverse,plotly)
+
+
+nf<-function(quanatity,func="log"){
+  if(func=="log"){
+    utility<-log10(quantity)
+    deriv_utility<-1/quantity
+  }
+  return(tibble(quantity,utility,deriv_utility))
+  
+}
+?seq
+
+quantity<-seq(from=1,to=99,by=0.0001)
+
+full<-nf(quantity)
+
+ggplot(full)+
+  geom_line(aes(quantity,utility))+
+  geom_line(aes(quantity,deriv_utility))+
+  theme_bw()
+
+plot
+
+?ln
+
+log
+
+plot_ly(full, x = ~quantity)%>% 
+  add_trace(y = ~utility, name = 'Nutzenfunktion',mode = 'lines')%>% 
+  add_trace(y = ~deriv_utility, name = 'Grenznutzen', mode = 'lines+markers') 
+
 
 header <- dashboardHeader(
-  title = "Shiny_economics"
+  title = "Lineare Funktionen"
 )
+
+
+
 body <- dashboardBody(
-  fluidRow(
-    column(width = 9,
+tags$head(tags$style(HTML('
+.skin-blue .main-header .navbar{
+  background-color: #4a5c66;
+}
+.irs-from, .irs-to, .irs-single{
+background:#80ba24;
+}
+/* logo */
+        .skin-blue .main-header .logo {
+                              background-color: #80ba24;
+                              }
+
+/* logo when hovered */
+        .skin-blue .main-header .logo:hover {
+                              background-color: #80ba24;
+        }
+/* box-top */
+        .box.box-warning{
+                              border-top-color: #80ba24;
+        }
+.irs-bar {
+    border-top: 1px solid #80ba24;
+    border-bottom: 1px solid #80ba24;
+    background: #80ba24;
+}
+.irs-bar-edge {
+    border: 1px solid #80ba24;
+    background: #80ba24;
+}
+        
+/* buttons */
+.btn{
+
+}
+
+
+'))),
+  fluidRow(column(width = 9,
            box(width = NULL, solidHeader = TRUE,
                plotlyOutput("p",height="92vh")
-           )
-    ),
+           )),
     column(width = 3,
            box(width = NULL, status = "warning",
                h3("Demand"),
@@ -28,10 +99,7 @@ body <- dashboardBody(
                sliderInput("range", h3("x limit"),
                            min = 20, max = 10000, value = 20, step = 10),
                actionButton("draw", "Draw")
-           )
-    )
-  )
-)
+           ))))
 
 ui<-dashboardPage(
   header,
@@ -109,7 +177,7 @@ server <- function(input, output, session) {
                          y0 = -4, y1 = 4,
                          xsizemode = "pixel", 
                          ysizemode = "pixel",
-                         fillcolor = "blue",
+                         fillcolor = "#002878",
                          line = list(color = "transparent")
                        )
       )
@@ -124,8 +192,8 @@ server <- function(input, output, session) {
       plot_ly( source = "trajectory") %>%
         add_trace(x = demand_start$quantity, y = demand_start$demand, name = 'Demand_old', mode = 'lines', line=list(color='#9696a3', dash="dash"), type = "scatter") %>%
         add_trace(x = supply_start$quantity, y = supply_start$supply, name = 'Supply_old', mode = 'lines', line=list(color='#9696a3', dash="dash"), type = 'scatter') %>%
-        add_trace(x = demand$quantity, y = demand$demand, name = 'Demand', mode = 'lines', type = "scatter") %>%
-        add_trace(x = supply$quantity, y = supply$supply, name = 'Supply', mode = 'lines', type = "scatter") %>%
+        add_trace(x = demand$quantity, y = demand$demand, name = 'Demand', mode = 'lines',line=list(color='#9C132E'), type = "scatter") %>%
+        add_trace(x = supply$quantity, y = supply$supply, name = 'Supply', mode = 'lines',line=list(color='#002878'), type = "scatter") %>%
         add_segments(x = gg$x_gg, xend = gg$x_gg, y = 0, yend = gg$p_gg,name="quantity", line = list(color = "#a4a4b0", dash="dot")) %>%
         add_segments(x = 0, xend = gg$x_gg, y = gg$p_gg, yend = gg$p_gg,name="price", line = list(color = "#a4a4b0", dash="dot")) %>% 
         layout(shapes = intercepts) %>%
