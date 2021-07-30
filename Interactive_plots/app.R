@@ -16,26 +16,6 @@ nf<-function(quanatity,func="log"){
   return(tibble(quantity,utility,deriv_utility))
   
 }
-?seq
-
-quantity<-seq(from=1,to=99,by=0.0001)
-
-full<-nf(quantity)
-
-ggplot(full)+
-  geom_line(aes(quantity,utility))+
-  geom_line(aes(quantity,deriv_utility))+
-  theme_bw()
-
-plot
-
-?ln
-
-log
-
-plot_ly(full, x = ~quantity)%>% 
-  add_trace(y = ~utility, name = 'Nutzenfunktion',mode = 'lines')%>% 
-  add_trace(y = ~deriv_utility, name = 'Grenznutzen', mode = 'lines+markers') 
 
 
 header <- dashboardHeader(
@@ -206,4 +186,3 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 
-?add_segments
